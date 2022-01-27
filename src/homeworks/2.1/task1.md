@@ -10,4 +10,3 @@
 * Файлы с названиями `override.rf` и `override.tf.json`
 * Файлы с названиями, оканчивающимися на `_override.tf` и `_override.tf.json`
 * Файлы с названиями `.terraformrc` и `terraform.rc`
-
