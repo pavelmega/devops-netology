@@ -18,3 +18,12 @@
 * `git push <remote> --tags` - отправить в репозиторий тэг
 * `git tag -d <tagname>` -  удалить локальный тэг
 * `git push origin --delete <tagname>` - удалить тэг из удаленного репозитория
+
+### Rebase
+* `git switch rebase-branch` - переключаемся на ветку с изменениями
+* `git rebase main` - выполняем перебазирование
+* _optional_ при возникновении конфликтов гит сделает пометки в файлах, для продолжения предложит выполнить `git rebase --continue`
+* `git switch main` - переключаемся на основную ветку
+* `git merge rebase-branch` - выполняем слияние
+* `git branch -d rebase-branch` - удаляем слитую ветку
+* _optional_ нетипичный вариант ребейза `git rebase --onto main one-branch two-branch` - найти изменения `one-branch` относительно `two-branch` и применить их к ветке `main`
