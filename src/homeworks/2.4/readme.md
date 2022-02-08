@@ -102,6 +102,19 @@ git --no-pager log --oneline -G"func globalPluginDirs(.*)"
 ```
 В выводе видим всего один коммит, само определение функции с момента добавления не менялось
 
+> __Fixed__
+>  
+> > нужно было найти изменение именно тела функции, а не определения, для этогго можно воспользоваться `git grep`:
+> > ```shell
+> > git --no-pager grep "globalPluginDirs"             
+> > commands.go:		GlobalPluginDirs: globalPluginDirs(),
+> > commands.go:	helperPlugins := pluginDiscovery.FindPlugins("credentials", globalPluginDirs())
+> > internal/command/cliconfig/config_unix.go:		// FIXME: homeDir gets called from globalPluginDirs during init, before
+> > plugins.go:// globalPluginDirs returns directories that should be searched for
+> > plugins.go:func globalPluginDirs() []string {
+> > ```
+> > А после того, как нашли в каком файле фигурирует данная функция `git log -L :globalPluginDirs:plugins.go` и увидеть в выводе работу с телом функции
+
 7. Кто автор функции `synchronizedWriters`?
 
 Воспользуемся командой `git log` изменив при этом форматирование вывода через `--pretty` на `short`
