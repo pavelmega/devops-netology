@@ -2,6 +2,7 @@
 
 Полезные заметки:
 * [По командам git](/src/notes/git.md)
+* [По работе с vagrant](/src/notes/vagrant.md)
 
 ## Homeworks
 * [1.1 Введение в DevOps](/src/homework/1.1)
