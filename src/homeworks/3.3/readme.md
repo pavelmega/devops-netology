@@ -66,7 +66,7 @@ PID    COMM               FD ERR PATH
 632    dbus-daemon        -1   2 /lib/dbus-1/system-services
 632    dbus-daemon        20   0 /var/lib/snapd/dbus-1/system-services/
 ```
-6. Какой системный вызов использует uname -a? Приведите цитату из man по этому системному вызову, где описывается альтернативное местоположение в /proc, где можно узнать версию ядра и релиз ОС.
+6. Какой системный вызов использует `uname -a`? Приведите цитату из man по этому системному вызову, где описывается альтернативное местоположение в `/proc`, где можно узнать версию ядра и релиз ОС.
 
 Утилита использует системный вызов `uname`
 
@@ -79,3 +79,27 @@ execve("/usr/bin/uname", ["uname", "-a"], 0x7fffa3157318 /* 32 vars */) = 0
 
 Цитата из мануала про `/proc`, полученная с хост-машины:
 > Part of the utsname information is also accessible via /proc/sys/kernel/{ostype, hostname,  osrelease,  ver‐sion, domainname}.
+
+7. Чем отличается последовательность команд через `;` и через `&&` в bash? Есть ли смысл использовать в bash `&&`, если применить `set -e`?
+
+При использовании `;` команда не будет дожидаться определённого статуса выполнения предыдущей, она просто запустит последовательное выполнение следующей команды, а использование `&&` заставит команду ожидать статуса выполнения предыдущей и запустится только в случае выхода из первой с нулевым статусом:
+
+> A list is a sequence of one or more pipelines separated by one of the operators ;, &, &&, or ||, and optionally terminated by one of ;, &, or <newline>.
+> Of these list operators, && and || have equal precedence, followed by ; and &, which have equal precedence.
+> A sequence of one or more newlines may appear in a list instead of a semicolon to delimit commands.
+>
+> If  a  command  is terminated by the control operator &, the shell executes the command in the background in a subshell.  The shell does not wait for the command to finish, and the return status is 0.  These are referred to as asynchronous commands.  Commands separated by a ; are executed sequentially; the shell waits for  each command to terminate in turn.  The return status is the exit status of the last command executed.
+>
+
+> command1 && command2
+>
+> command2 is executed if, and only if, command1 returns an exit status of zero (success).
+
+`set -e` имеет данное определение:
+
+> When this option is on, if a simple command fails for any of the reasons listed in Consequences of
+> Shell Errors or returns an exit status value >0, and is not part of the compound list following a
+> while, until, or if keyword, and is not a part of an AND or OR list, and is not a pipeline preceded by
+> the ! reserved word, then the shell shall immediately exit.
+
+Следовательно команда при использовании в связке с другими не прервёт их последовательности, а значит, что `&&` и `;` будут иметь равнозначное поведение
