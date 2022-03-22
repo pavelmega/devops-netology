@@ -2,7 +2,7 @@
 
 1. Используя знания из лекции по systemd, создайте самостоятельно простой unit-файл для [node_exporter](https://github.com/prometheus/node_exporter)
 
-Для начала необходимо установить `node_exporter`. Сделать это можно воспользовавшись [официальной документацией](https://prometheus.io/docs/guides/node-exporter/#installing-and-running-the-node-exporter), и добавим его в `/usr/local/bin/`, чтобы свободно вызывать из консоли:
+Для начала необходимо установить `node_exporter`. Сделать это можно воспользовавшись [официальной документацией](https://prometheus.io/docs/guides/node-exporter/#installing-and-running-the-node-exporter). После установки добавим его в `/usr/local/bin/`, чтобы свободно вызывать из консоли:
 
 ```shell
 wget https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
@@ -50,9 +50,7 @@ WantedBy=multi-user.target
 
 ```shell
 vagrant@vagrant:~$ sudo systemctl start node_exporter.service
-
 vagrant@vagrant:~$ sudo systemctl status node_exporter.service
-
 ● node_exporter.service - Node exporter service of Prometheus
      Loaded: loaded (/etc/systemd/system/node_exporter.service; disabled; vendor preset: enabled)
      Active: active (running) since Tue 2022-03-22 15:05:51 UTC; 8s ago
@@ -79,7 +77,6 @@ lines 1-19/19 (END)
 
 ```shell
 vagrant@vagrant:~$ curl -I http://localhost:9100/metric
-
 HTTP/1.1 200 OK
 Date: Tue, 22 Mar 2022 15:08:01 GMT
 Content-Length: 150
