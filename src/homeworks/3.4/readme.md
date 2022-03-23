@@ -233,3 +233,58 @@ fs.nr_open = 1048576
 `fs.nr_open` - максимальное количество дескрипторов файлов, которые может выделить процесс. Значение по умолчанию равно 1024*1024 (1048576), чего должно быть достаточно для большинства машин.
 Изменить для текущей сесии можно через `ulimit -n`, для групп и отдельных пользователей через конфигурационный файл `/etc/security/limits.conf`.
 Максимальный лимит обычно закладывается при сборке ядра и сделать его больше через `ulimit -n` не удастся.
+
+6. Запустите любой долгоживущий процесс (не `ls`, который отработает мгновенно, а, например, `sleep 1h`) в отдельном неймспейсе процессов; покажите, что ваш процесс работает под `PID 1` через `nsenter`.
+
+Запустим `bash` в отдельном процессе.
+
+```shell
+vagrant@vagrant:~$ sudo unshare -f --pid --mount-proc /bin/bash
+root@vagrant:/home/vagrant# ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.3   7236  3900 pts/0    S    13:59   0:00 /bin/bash
+root           8  0.0  0.3   8892  3344 pts/0    R+   13:59   0:00 ps aux
+```
+
+Найдём его в дереве процессов и подключимся через `nsenter`.
+
+```shell
+vagrant@vagrant:~$ ps au --forest
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+vagrant     1588  0.0  0.4   7360  4160 pts/1    Ss   14:01   0:00 -bash
+vagrant     1604  0.0  0.3   8892  3316 pts/1    R+   14:02   0:00  \_ ps au --forest
+vagrant     1484  0.0  0.4   7492  4364 pts/0    Ss   13:54   0:00 -bash
+root        1532  0.0  0.4   9264  4548 pts/0    S    13:59   0:00  \_ sudo unshare -f --pid --mount-proc /bin/bash
+root        1534  0.0  0.0   5480   528 pts/0    S    13:59   0:00      \_ unshare -f --pid --mount-proc /bin/bash
+root        1535  0.0  0.3   7236  3900 pts/0    S+   13:59   0:00          \_ /bin/bash
+root         673  0.0  0.1   5828  1804 tty1     Ss+  13:53   0:00 /sbin/agetty -o -p -- \u --noclear tty1 linux
+
+
+vagrant@vagrant:~$ sudo nsenter -t 1535 -p -m
+root@vagrant:/# ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.3   7236  3900 pts/0    S+   13:59   0:00 /bin/bash
+root           9  0.0  0.4   7236  4124 pts/1    S    14:05   0:00 -bash
+root          20  0.0  0.3   8892  3284 pts/1    R+   14:05   0:00 ps aux
+```
+
+7. Найдите информацию о том, что такое `:(){ :|:& };:`. Вызов `dmesg` расскажет, какой механизм помог автоматической стабилизации. Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
+
+Данная команда - это `fork bomb` она порождает большое количество собственных копий и тем самым пытается заполнить свободное место в списке активных процессов, её можно разобрать на следующие части:
+
+```shell
+:()         # define a function named :, () defines a function in bash
+{
+      : | :;  # the pipe needs two instances of this function, which forks two shells
+}
+;           # end function definition
+:           # run it
+```
+
+В выводе `dmesg` - можно увидеть данное сообщение об отклонении форка.
+
+``` shell
+[  916.422595] cgroup: fork rejected by pids controller in /user.slice/user-1000.slice/session-6.scope
+```
+
+Количество процессов можно изменить через `ulimit -u`.
