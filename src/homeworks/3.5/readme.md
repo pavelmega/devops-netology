@@ -92,7 +92,7 @@ Device       Start     End Sectors  Size Type
 /dev/sdb1     2048 4196351 4194304    2G Linux filesystem
 /dev/sdb2  4196352 5242846 1046495  511M Linux filesystem
 ```
-5. Используя sfdisk, перенесите данную таблицу разделов на второй диск
+5. Используя `sfdisk`, перенесите данную таблицу разделов на второй диск
 
 Для переноса воспользуемся документацией и найдём там один из способов переноса через дамп:
 
@@ -187,7 +187,7 @@ mdadm: Defaulting to version 1.2 metadata
 mdadm: array /dev/md0 started.
 ```
 
-7. Соберите mdadm RAID0 на второй паре маленьких разделов.
+7. Соберите `mdadm` RAID0 на второй паре маленьких разделов.
 
 Разделы для объединения в RAID0: `/dev/sdb2` и `/dev/sdc2`
 
@@ -234,7 +234,7 @@ vagrant@vagrant:/tmp$ sudo pvcreate /dev/md1
   PV UUID               QkFvRV-jTnE-ybc9-ygBK-okaN-7ed2-VAXiku
 ```
 
-9. Создайте общую volume-group на этих двух PV.
+9. Создайте общую volume-group на этих двух `PV`.
 
 ```shell
 vagrant@vagrant:/tmp$ sudo vgcreate test_volume_group /dev/md0 /dev/md1
@@ -263,7 +263,7 @@ vagrant@vagrant:/tmp$ sudo vgdisplay
   VG UUID               p9hDsq-Jax0-rcGp-KS8p-dDKa-bWdr-ntRcfx
   ```
 
-10. Создайте LV размером 100 Мб, указав его расположение на PV с RAID0
+10. Создайте `LV` размером 100 Мб, указав его расположение на `PV` с RAID0
 
 ```shell
 vagrant@vagrant:/tmp$ sudo lvcreate --size=100MB test_volume_group /dev/md1
