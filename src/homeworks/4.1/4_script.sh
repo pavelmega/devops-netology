@@ -3,7 +3,7 @@
 ips=("192.168.0.1" "173.194.222.113" "87.250.250.242")
 port=80
 
-for i in {1..5}
+while ((1==1))
 do
 haveError=0
     for ip in ${ips[@]}
